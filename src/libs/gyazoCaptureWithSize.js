@@ -1,6 +1,7 @@
 import thenChrome from 'then-chrome'
 import browserInfo from 'bowser'
 import {trimImage, appendImageToCanvas} from './canvasUtils'
+import PngPhysChunkWriter from 'png-phys-chunk-writer'
 import postToGyazo from './postToGyazo'
 import uploadLimitFileSize from './uploadLimitFileSize'
 import waitForDelay from './waitForDelay'
@@ -22,6 +23,10 @@ export default (request, sender, sendResponse) => {
       })
       let uploadImage = baseCanvas.toDataURL()
       const uploadLimitVolume = await uploadLimitFileSize()
+      const pngPhysChunkWriter = new PngPhysChunkWriter(uploadImage)
+      pngPhysChunkWriter.writeChunkpHYs(request.data.s)
+      uploadImage = pngPhysChunkWriter.base64EncodedURI
+
       if (uploadImage.length > uploadLimitVolume) {
         uploadImage = await toJpegDataURL(baseCanvas)
       }
@@ -32,7 +37,7 @@ export default (request, sender, sendResponse) => {
         width: request.data.w,
         height: request.data.h,
         scale: request.data.s,
-        desc: request.data.desc
+        desc: `(daiiz Edition) ${request.data.desc || ''}`
       })
       return sendResponse()
     }
