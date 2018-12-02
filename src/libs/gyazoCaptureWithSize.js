@@ -23,12 +23,12 @@ export default (request, sender, sendResponse) => {
       })
       let uploadImage = baseCanvas.toDataURL()
       const uploadLimitVolume = await uploadLimitFileSize()
-      const pngPhysChunkWriter = new PngPhysChunkWriter(uploadImage)
-      pngPhysChunkWriter.writeChunkpHYs(request.data.s)
-      uploadImage = pngPhysChunkWriter.base64EncodedURI
-
       if (uploadImage.length > uploadLimitVolume) {
         uploadImage = await toJpegDataURL(baseCanvas)
+      } else {
+        const pngPhysChunkWriter = new PngPhysChunkWriter(uploadImage)
+        pngPhysChunkWriter.writeChunkpHYs(request.data.s)
+        uploadImage = pngPhysChunkWriter.base64EncodedURI
       }
       postToGyazo(request.tab.id, {
         imageData: uploadImage,
