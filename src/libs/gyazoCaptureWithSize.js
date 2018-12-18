@@ -1,6 +1,7 @@
 import thenChrome from 'then-chrome'
 import browserInfo from 'bowser'
 import {trimImage, appendImageToCanvas} from './canvasUtils'
+import {convertToByteArray, convertToDataURI, writePngDpi} from 'png-dpi-reader-writer'
 import postToGyazo from './postToGyazo'
 import uploadLimitFileSize from './uploadLimitFileSize'
 import waitForDelay from './waitForDelay'
@@ -24,6 +25,10 @@ export default (request, sender, sendResponse) => {
       const uploadLimitVolume = await uploadLimitFileSize()
       if (uploadImage.length > uploadLimitVolume) {
         uploadImage = await toJpegDataURL(baseCanvas)
+      } else {
+        const orgByteArray = convertToByteArray(uploadImage)
+        const genByteArray = writePngDpi(orgByteArray, request.data.s * 72)
+        uploadImage = convertToDataURI(genByteArray)
       }
       postToGyazo(request.tab.id, {
         imageData: uploadImage,
@@ -32,7 +37,7 @@ export default (request, sender, sendResponse) => {
         width: request.data.w,
         height: request.data.h,
         scale: request.data.s,
-        desc: request.data.desc
+        desc: `(daiiz Edition) ${request.data.desc || ''}`
       })
       return sendResponse()
     }

@@ -6,6 +6,7 @@
     "chrome-browser-object-polyfill": "^0.2.2",
     "delegate": "^3.0.0",
     "dom-css": "^2.0.0",
+    "png-dpi-reader-writer": "^0.1.0",
     "then-chrome": "^1.0.6",
     "xtend": "^4.0.1"
   },
